@@ -3,38 +3,59 @@ import 'package:note_taking_app/models/note_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NoteProvider extends ChangeNotifier {
-  //variables
-  final List _notes = [];
+  // Variables
+  final List<NoteModel> _notes = [];
 
-  //getters
-  List get notes => _notes;
+  // Getters
+  List<NoteModel> get notes => _notes;
 
-  //loadData
-  void loadData() async {
+
+  // Shared Preferences key
+  static const String notesKey = 'notes';
+
+  // Load Notes
+  void loadNotes() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<String> noteList = prefs.getStringList('_notes') ?? [];
-    notifyListeners();
+    final List<String>? notesStringList = prefs.getStringList(notesKey);
+
+    if (notesStringList != null) {
+      _notes.clear();
+      for (String noteString in notesStringList) {
+        final NoteModel note = NoteModel.fromJson(noteString);
+        _notes.add(note);
+      }
+      notifyListeners();
+    }
   }
 
-  //addNote
+  // Add Note
   void addNote(NoteModel noteModel) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     _notes.add(noteModel);
+
+    // Convert notes to a List of Strings before saving to SharedPreferences
+    final List<String> notesStringList = _notes.map((note) => note.toJson()).toList();
+    prefs.setStringList(notesKey, notesStringList);
+
     notifyListeners();
   }
 
-  //deleteNote
+  // Delete Note
   void deleteNote(int index) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     _notes.removeAt(index);
+
+    // Convert notes to a List of Strings before saving to SharedPreferences
+    final List<String> notesStringList = _notes.map((note) => note.toJson()).toList();
+    prefs.setStringList(notesKey, notesStringList);
     notifyListeners();
   }
 
-  //deleteAllTasks
+  // Delete All Notes
   void deleteAllTasks() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     _notes.clear();
-    prefs.clear();
+    prefs.remove(notesKey);
     notifyListeners();
   }
 }

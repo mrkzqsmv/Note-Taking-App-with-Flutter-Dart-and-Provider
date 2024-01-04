@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
 import 'providers/note_provider.dart';
 
-void main() {
+void main(){
   runApp(
     MultiProvider(
       providers: [

@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    Provider.of<NoteProvider>(context).loadData();
+    Provider.of<NoteProvider>(context, listen: false).loadNotes();
     super.initState();
   }
 
